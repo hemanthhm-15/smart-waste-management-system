@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Waste AI</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 420px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        #result {
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Smart Waste AI</h2>
+
+    <input type="text" id="location" placeholder="Enter location">
+    <textarea id="complaint" placeholder="Enter complaint"></textarea>
+
+    <button onclick="analyze()">Analyze</button>
+    <button onclick="clearText()">Clear</button>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    function analyze() {
+        let complaint = document.getElementById("complaint").value;
+        let location = document.getElementById("location").value;
+
+        if (!complaint) {
+            alert("Enter complaint");
+            return;
+        }
+
+        fetch("http://localhost:8080/api/complaints", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                description: complaint,
+                location: location || "Unknown",
+                status: "PENDING",
+                imageUrl: ""
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("result").style.display = "block";
+            document.getElementById("result").innerText = data.aiResult;
+        });
+    }
+
+    function clearText() {
+        document.getElementById("complaint").value = "";
+        document.getElementById("location").value = "";
+        document.getElementById("result").style.display = "none";
+    }
+</script>
+
+</body>
+</html>
